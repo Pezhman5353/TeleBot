@@ -283,7 +283,7 @@ if ($rows_statusUser['chatId']) {
     $telegram->sendChatAction($action_typing);
 
     if ($msgType == 'message' && $text == 'ثبت نام') {
-        $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "fffffffثبت نام را انتخاب کردید");
+        $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "ثبت نام را انتخاب کردید");
         $telegram->sendMessage($content);
     } elseif ($msgType == 'message' && $text == 'ورود دانشجو') {
         $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "ورود دانشجو را انتخاب کردید");
