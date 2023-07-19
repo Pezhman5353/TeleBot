@@ -283,17 +283,37 @@ if ($rows_statusUser['chatId']) {
     $telegram->sendChatAction($action_typing);
 
 
-    if ($msgType == 'message' && $text == ' ثبت نام') {
+    if ($msgType == 'message' && $text == 'ثبت نام ') {
+        $start_key = json_encode([
+            "keyboard" =>
+            [
+                [['text' => 'قبول شرایط ']],
+                [['text' => 'باز گشت به صفحه اصلی ']],
+            ],
+            "resize_keyboard" => true
+        ]);
+
         $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "ثبت نام را انتخاب کردید");
         $telegram->sendMessage($content);
-    } elseif ($msgType == 'message' && $text == ' ورود دانشجو') {
+    } elseif ($msgType == 'message' && $text == 'ورود دانشجو ') {
         $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "ورود دانشجو را انتخاب کردید");
+        $telegram->sendMessage($content);
+    } elseif ($msgType == 'message' && $text == 'باز گشت به صفحه اصلی ') {
+        $start_key = json_encode([
+            "keyboard" =>
+            [
+                [['text' => 'ورود دانشجو '], ['text' => 'ثبت نام ']],
+            ],
+            "resize_keyboard" => true
+        ]);
+
+        $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "اقدام کنید برای ثبت نام یا ورود");
         $telegram->sendMessage($content);
     } else {
         $start_key = json_encode([
             "keyboard" =>
             [
-                [['text' => ' ورود دانشجو'], ['text' => ' ثبت نام']],
+                [['text' => 'ورود دانشجو '], ['text' => 'ثبت نام ']],
             ],
             "resize_keyboard" => true
         ]);
