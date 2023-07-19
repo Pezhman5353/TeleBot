@@ -220,7 +220,7 @@ try {
 
 
 
-$stmt = $pdo->prepare("SELECT chatId, active, step FROM statusUser WHERE chatId = '$chat_id'");
+$stmt = $pdo->prepare("SELECT * FROM statusUser WHERE chatId = '$chat_id'");
 $stmt->execute();
 $rows_statusUser = $stmt->fetch(PDO::FETCH_ASSOC);
 $rows_statusUser['chatId'];
@@ -282,17 +282,18 @@ if ($rows_statusUser['chatId']) {
 } else {
     $telegram->sendChatAction($action_typing);
 
-    if ($msgType == 'message' && $text == 'ثبت نام') {
+
+    if ($msgType == 'message' && $text == ' ثبت نام') {
         $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "ثبت نام را انتخاب کردید");
         $telegram->sendMessage($content);
-    } elseif ($msgType == 'message' && $text == 'ورود دانشجو') {
+    } elseif ($msgType == 'message' && $text == ' ورود دانشجو') {
         $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "ورود دانشجو را انتخاب کردید");
         $telegram->sendMessage($content);
     } else {
         $start_key = json_encode([
             "keyboard" =>
             [
-                [['text' => 'ورود دانشجو'], ['text' => 'ثبت نام']],
+                [['text' => ' ورود دانشجو'], ['text' => ' ثبت نام']],
             ],
             "resize_keyboard" => true
         ]);
