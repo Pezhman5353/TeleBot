@@ -293,7 +293,7 @@ if ($rows_statusUser['chatId']) {
             "resize_keyboard" => true
         ]);
 
-        $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "ثبت نام را انتخاب کردید");
+        $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "متن تایید قوانین");
         $telegram->sendMessage($content);
     } elseif ($msgType == 'message' && $text == 'ورود دانشجو ') {
         $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "ورود دانشجو را انتخاب کردید");
