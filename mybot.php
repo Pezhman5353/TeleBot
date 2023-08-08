@@ -287,7 +287,7 @@ if ($rows_statusUser['chatId']) {
         $start_key = json_encode([
             "keyboard" =>
             [
-                [['text' => 'قبول شرایط ']],
+                [['text' => 'ddقبول شرایط ']],
                 [['text' => 'باز گشت به صفحه اصلی ']],
             ],
             "resize_keyboard" => true
