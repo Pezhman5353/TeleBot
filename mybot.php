@@ -232,7 +232,7 @@ if ($rows_statusUser['chatId']) {
 
     if ($rows_statusUser['active']) {
 
-        if ($msgType == 'message' && $text == 'انتخاب واحد') {
+        if ($msgType == 'message' && $text == 'Dانتخاب واحد') {
             $content = array('chat_id' => $chat_id, 'text' => "گزینه انتخاب واحد را انتخاب کردید");
             $telegram->sendMessage($content);
 
