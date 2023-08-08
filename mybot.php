@@ -259,11 +259,6 @@ if ($rows_statusUser['chatId']) {
         }
 
 
-
-
-
-
-
     } else {
         $Home_key = json_encode([
             "keyboard" =>
