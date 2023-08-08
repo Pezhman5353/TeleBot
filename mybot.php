@@ -223,9 +223,6 @@ try {
 $stmt = $pdo->prepare("SELECT * FROM statusUser WHERE chatId = '$chat_id'");
 $stmt->execute();
 $rows_statusUser = $stmt->fetch(PDO::FETCH_ASSOC);
-$rows_statusUser['chatId'];
-$rows_statusUser['active'];
-$rows_statusUser['step'];
 
 $action_typing = ['chat_id' => $chat_id, 'action' => "typing"];
 
