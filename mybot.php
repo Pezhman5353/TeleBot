@@ -106,7 +106,7 @@ try {
 // $content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => "OK");
 // $telegram->sendMessage($content);
 //------------------------------------------------------------------------------------------------
-//---- برنامه تایید اینزرت رو برمیگردونه
+// ---- برنامه تایید اینزرت رو برمیگردونه
 // $stmt = $pdo->prepare("INSERT INTO نام_جدول (ستون1, ستون2) VALUES (?, ?)");
 // $stmt->execute([$value1, $value2]);
 
@@ -275,6 +275,17 @@ if ($rows_RU['RU_Chatid']) {
     $telegram->sendChatAction($action_typing);
 
 
+    // اگر ثبت نام نبود اینجا ببین یوزر داری یا نه
+    $SR_Query = $pdo->prepare("SELECT * FROM Start_Register WHERE SR_Chatid = '$chat_id'");
+    $SR_Query->execute();
+    $rows_SR = $SR_Query->fetch(PDO::FETCH_ASSOC);
+
+    if ($rows_SR['SR_Chatid']) {
+
+    } else {
+        $stmt = $pdo->prepare("INSERT INTO Start_Register(SR_Chatid) VALUES (?)");
+        $stmt->execute([$chat_id]);
+    }
     if ($msgType == 'message' && $text == 'ثبت نام ') {
         $start_key = json_encode([
             "keyboard" =>
@@ -305,7 +316,7 @@ if ($rows_RU['RU_Chatid']) {
         $start_key = json_encode([
             "keyboard" =>
             [
-                [['text' => 'ورود دانشجو '], ['text' => 'ثبتdd نام ']],
+                [['text' => 'ورود دانشجو '], ['text' => 'ثبت نام ']],
             ],
             "resize_keyboard" => true
         ]);
