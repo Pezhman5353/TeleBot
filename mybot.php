@@ -220,17 +220,17 @@ try {
 
 
 
-$stmt = $pdo->prepare("SELECT * FROM statusUser WHERE chatId = '$chat_id'");
-$stmt->execute();
-$rows_statusUser = $stmt->fetch(PDO::FETCH_ASSOC);
+$RU_Query = $pdo->prepare("SELECT * FROM 'Register_User' WHERE 'RU_Chatid' = '$chat_id'");
+$RU_Query->execute();
+$rows_RU = $RU_Query->fetch(PDO::FETCH_ASSOC);
 
 $action_typing = ['chat_id' => $chat_id, 'action' => "typing"];
 
 
-if ($rows_statusUser['chatId']) {
+if ($rows_RU['RU_Chatid']) {
     $telegram->sendChatAction($action_typing);
 
-    if ($rows_statusUser['active']) {
+    if ($rows_RU['RU_Name']) {
 
         if ($msgType == 'message' && $text == 'انتخاب واحد') {
             $content = array('chat_id' => $chat_id, 'text' => "گزینه انتخاب واحد را انتخاب کردید");
