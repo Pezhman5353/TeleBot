@@ -220,7 +220,7 @@ try {
 
 
 
-$RU_Query = $pdo->prepare("SELECT * FROM 'Register_User' WHERE 'RU_Chatid' = '$chat_id'");
+$RU_Query = $pdo->prepare("SELECT * FROM Register_User WHERE RU_Chatid = '$chat_id'");
 $RU_Query->execute();
 $rows_RU = $RU_Query->fetch(PDO::FETCH_ASSOC);
 
