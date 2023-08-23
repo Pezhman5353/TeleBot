@@ -284,7 +284,7 @@ if ($rows_RU['RU_Chatid']) {
             $start_key = json_encode([
                 "keyboard" =>
                 [
-                    [['text' => 'ddثبت نام دانشجو']]
+                    [['text' => 'ffffثبت نام دانشجو']]
                 ],
                 "resize_keyboard" => true
             ]);
