@@ -56,7 +56,7 @@ try {
 }
 
 
-
+sssss
 
 
 
@@ -288,7 +288,7 @@ if ($rows_RU['RU_Chatid']) {
             $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "متن تایید قوانین");
             $telegram->sendMessage($content);
         } elseif ($msgType == 'message' && $text == 'ثبت نام دانشجو') {
-            $content = array('chat_id' => $chat_id, 'text' => "dddd لطفا کد ملی خود را وارد کنید");
+            $content = array('chat_id' => $chat_id, 'text' => "لطفا کد ملی خود را وارد کنید");
             $telegram->sendMessage($content);
 
             $telegram->buildKeyBoardHide(true);
