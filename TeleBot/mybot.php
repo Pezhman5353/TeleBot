@@ -468,32 +468,35 @@ if ($rows_UR['UR_Chatid']) {
                 $telegram->sendMessage($content);
             }
 
-        } else if (is_numeric($EN_Number) == 1 ) {
-            $start_key = json_encode([
-                "keyboard" =>
-                [
-                    [['text' => 'بازگشت']],
-                ],
-                "resize_keyboard" => true
-            ]);
+        } else if ($msgType == 'message') {
+            if (is_numeric($EN_Number) != 1) {
+                $start_key = json_encode([
+                    "keyboard" =>
+                    [
+                        [['text' => 'بازگشت']],
+                    ],
+                    "resize_keyboard" => true
+                ]);
 
-            $content = array(
-                'chat_id' => $chat_id,
-                'reply_markup' => $start_key,
-                'text' => "فقط عدد وارد کنید");
-            $telegram->sendMessage($content);
-        } else if (strlen($EN_Number) != 10) {
-            $start_key = json_encode([
-                "keyboard" =>
-                [
-                    [['text' => 'بازگشت']],
-                ],
-                "resize_keyboard" => true
-            ]);
+                $content = array(
+                    'chat_id' => $chat_id,
+                    'reply_markup' => $start_key,
+                    'text' => "فقط عدد وارد کنید"
+                );
+                $telegram->sendMessage($content);
+            } else if (strlen($EN_Number) != 10) {
+                $start_key = json_encode([
+                    "keyboard" =>
+                    [
+                        [['text' => 'بازگشت']],
+                    ],
+                    "resize_keyboard" => true
+                ]);
 
-            $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "کد ملی 10 کارکتر می باشد");
-            $telegram->sendMessage($content);
-        } else if ($msgType != 'message') {
+                $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "کد ملی 10 کارکتر می باشد");
+                $telegram->sendMessage($content);
+            }
+        } else {
             $start_key = json_encode([
                 "keyboard" =>
                 [
