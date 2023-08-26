@@ -481,7 +481,7 @@ if ($rows_UR['UR_Chatid']) {
                 $content = array(
                     'chat_id' => $chat_id,
                     'reply_markup' => $start_key,
-                    'text' => "فقط عدد وارد کنید"
+                    'text' => "کد ملی فقط شامل اعداد می باشد"
                 );
                 $telegram->sendMessage($content);
             } else if (strlen($EN_Number) != 10) {
@@ -505,7 +505,7 @@ if ($rows_UR['UR_Chatid']) {
                 "resize_keyboard" => true
             ]);
 
-            $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "فقط مجاز به وارد کردن کد ملی هستید");
+            $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "کد ملی فقط شامل اعداد می باشد");
             $telegram->sendMessage($content);
         }
     }
