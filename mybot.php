@@ -597,8 +597,6 @@ if ($rows_UR['UR_Chatid']) {
 
 
 
-
-
 if ($msgType == 'message') {
 
 
