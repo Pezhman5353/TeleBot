@@ -5,7 +5,7 @@
  * https://github.com/Eleirbag89/TelegramBotPHP
  * https://t.me/howCreateBot
  * 
- * https://api.telegram.org/bot6122399181:AAE9xmO-dZq3nsmqwzJqWhQVtUDyU9mmvVw/setWebhook?url=https://proxyfa.top/TeleBot/mybot.php
+ * https://api.telegram.org/bot6122399181:AAE9xmO-dZq3nsmqwzJqWhQVtUDyU9mmvVw/setWebhook?url=https://proxyfa.top/repositories/TeleBot/mybot.php
  * 
  */
 
