@@ -123,6 +123,9 @@ try {
 
 
 
+$action_typing = ['chat_id' => $chat_id, 'action' => "typing"];
+
+
 
 
 
