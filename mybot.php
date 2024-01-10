@@ -5,7 +5,7 @@
  * https://github.com/Eleirbag89/TelegramBotPHP
  * https://t.me/howCreateBot
  * 
- * https://api.telegram.org/bot6122399181:AAE9xmO-dZq3nsmqwzJqWhQVtUDyU9mmvVw/setWebhook?url=https://proxyfa.top/repositories/TeleBot/mybot.php
+ * https://api.telegram.org/bot6122399181:AAE9xmO-dZq3nsmqwzJqWhQVtUDyU9mmvVw/setWebhook?url=https://proxyfa.top/TeleBot/mybot.php
  * 
  */
 
@@ -101,8 +101,8 @@ $FA_Number = tr_num($text, 'fa'); //// تبدیل عدد به فارسی
 
 
 $host = 'localhost';
-$db = 'proxyfa1_uniDB';
-$user = 'proxyfa1_uniUS';
+$db = 'proxyfa2_teleBotDB';
+$user = 'proxyfa2_teleBotUS';
 $pass = 'Pezhman35153515';
 $charset = 'utf8mb4';
 
