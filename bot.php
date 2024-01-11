@@ -77,5 +77,5 @@ $FA_Number = tr_num($text, 'fa'); //// تبدیل عدد به فارسی
 
 $action_typing = ['chat_id' => $chat_id, 'action' => "typing"];
 
-$content = array('chat_id' => $chat_id, 'text' => "گزینه انتخاب واحد را انتخاب کردید");
+$content = array('chat_id' => $chat_id, 'text' => "dddddddddddd");
 $telegram->sendMessage($content);
