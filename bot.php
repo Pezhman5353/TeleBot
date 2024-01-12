@@ -34,48 +34,45 @@ $replyUserId = $telegram->ReplyToMessageFromUserID();
 $msgType = $telegram->getUpdateType();
 
 
-//jdf
-include("jdf.php");
-$jdf_DateTime = jdate("l j F Y  ساعت h:i", time()); //// ساعت و تاریخ
-$jdf_MessageTime = jdate("Y/m/d  ساعت H:i", time()); //// زمان ارسال پیام
-$jdf_Unix = jdate("Y/n/j", time()); //// محاسبه سال تولد
-$jdf_Yers = jdate("Y", time()); //// سال
-$jdf_Monte = jdate("n", time()); /// ماه
-$jdf_Date = jdate("z", time()); //// روز
-$jdf_Hafte = jdate("W", time()); /// هفته
-$jdf_RoozHafte = jdate("w", time()); /// روز هفته
-$jdf_Fasl = jdate("b", time()); //// فصل
-$call_Time = jdate("U", time()); //// Unix Time
-$EN_Number = tr_num($text); //// تبدیل عدد به انگلیسی
-$FA_Number = tr_num($text, 'fa'); //// تبدیل عدد به فارسی
+if (file_exists("register/" . $chat_id . ".step")) {
+    file_put_contents("register/" . $chat_id . ".step", "0");
+    $telegram->sendMessage(['chat_id' => $chat_id, 'text' => "Yes"]);
+} else {
+    // $step = file_get_contents(`register/s.step`);
+    $telegram->sendMessage(['chat_id' => $chat_id, 'text' => "No"]);
+}
 
 
 
 
 
-// $host = 'localhost';
-// $db = 'proxyfa2_teleBotDB';
-// $user = 'proxyfa2_teleBotUS';
-// $pass = 'Pezhman35153515';
-// $charset = 'utf8mb4';
-
-// $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-
-// $options = [
-//     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-//     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-//     PDO::ATTR_EMULATE_PREPARES => false,
-// ];
-
-// try {
-//     $pdo = new PDO($dsn, $user, $pass, $options);
-// } catch (\PDOException $e) {
-//     throw new \PDOException($e->getMessage(), (int) $e->getCode());
+// switch ($step) {
+//     case 0:
+//         if ($text == "/start") {
+//             $reply = "لطفا نام خود را وارد کنید.";
+//             $telegram->sendMessage(['chat_id' => $chat_id, 'text' => $reply]);
+//             file_put_contents("register/$chat_id.step", "1");
+//         }
+//         break;
+//     case 1:
+//         file_put_contents("register/$chat_id.name", "$text");
+//         $reply = "لطفا نام خانوادگی خود را وارد کنید.";
+//         $telegram->sendMessage(['chat_id' => $chat_id, 'text' => $reply]);
+//         file_put_contents("register/$chat_id.step", "2");
+//         break;
+//     case 2:
+//         file_put_contents("register/$chat_id.lastname", "$text");
+//         $reply = "لطفا کد ملی خود را وارد کنید.";
+//         $telegram->sendMessage(['chat_id' => $chat_id, 'text' => $reply]);
+//         file_put_contents("register/$chat_id.step", "3");
+//         break;
+//     case 3:
+//         file_put_contents("register/$chat_id.nationalcode", "$text");
+//         $reply = "ثبت نام شما با موفقیت انجام شد.";
+//         $telegram->sendMessage(['chat_id' => $chat_id, 'text' => $reply]);
+//         file_put_contents("register/$chat_id.step", "0");
+//         break;
 // }
 
-
-
-$action_typing = ['chat_id' => $chat_id, 'action' => "typing"];
-
-$content = array('chat_id' => $chat_id, 'text' => "dddddddddddd");
-$telegram->sendMessage($content);
+// $content = array('chat_id' => $chat_id, 'text' => "Reza");
+// $telegram->sendMessage($content);
