@@ -68,6 +68,12 @@ function checkMeliCode($meli)
 //$result = $telegram->getData();
 
 // Take text and chat_id from the message
+
+$input = file_get_contents('php://input');
+$update = json_decode($input, true);
+$json = json_encode($update, JSON_PRETTY_PRINT);
+
+
 $text = $telegram->Text();
 $caption = $telegram->Caption();
 $chat_id = $telegram->ChatID();
@@ -79,6 +85,15 @@ $reply_to_message_id = $telegram->ReplyToMessageID();
 $user_id = $telegram->UserID();
 $replyUserId = $telegram->ReplyToMessageFromUserID();
 $msgType = $telegram->getUpdateType();
+$msgGroup = $telegram->messageFromGroup();
+$contact = $telegram->getContactPhoneNumber();
+
+
+$photo_file_id = $update['message']['photo'][0]['file_id'];
+
+
+
+
 
 
 //jdf
@@ -120,13 +135,10 @@ try {
     throw new \PDOException($e->getMessage(), (int) $e->getCode());
 }
 
-
-
-
-
-
-
-
+// $telegram->sendMessage([
+//     'chat_id' => $chat_id,
+//     'text' => $json
+// ]);
 
 //------------------------------------------------------------------------------------------------
 // //---- SELECT
@@ -283,119 +295,329 @@ try {
 // !empty($_POST['email']) 
 // isset($_POST['email'])
 
+//------------------------------------------------------------------------------------------------
 
 
-// $action_typing = ['chat_id' => $chat_id, 'action' => "typing"];
+$action_typing = ['chat_id' => $chat_id, 'action' => "typing"];
+
+$picPayment = -1002133846315;
 
 
-
-
-// $UR_Query = $pdo->prepare("SELECT * FROM User_Register WHERE UR_Chatid = '$chat_id'");
-// $UR_Query->execute();
-// $rows_UR = $UR_Query->fetch(PDO::FETCH_ASSOC);
-
-
-
-// $telegram->sendMessage(['chat_id' => $chat_id, 'text' => "XXXXXXXXXX5"]);
+$UR_Query = $pdo->prepare("SELECT * FROM User_Register WHERE UR_Chatid = '$chat_id'");
+$UR_Query->execute();
+$rows_UR = $UR_Query->fetch(PDO::FETCH_ASSOC);
 
 
 
-// if ($rows_UR['UR_Chatid']) {
-//     $telegram->sendChatAction($action_typing);
 
-//     if ($rows_UR['UR_Name']) {
-
-//         if ($msgType == 'message' && $text == 'انتخاب واحد') {
-//             $content = array('chat_id' => $chat_id, 'text' => "گزینه انتخاب واحد را انتخاب کردید");
-//             $telegram->sendMessage($content);
-
-//         } elseif ($msgType == 'message' && $text == 'بدهی') {
-//             $content = array('chat_id' => $chat_id, 'text' => "گزینه بدهی را انتخاب کردید");
-//             $telegram->sendMessage($content);
-
-//         } elseif ($msgType == 'message' && $text == 'ارسال پیام به پشتیبانی') {
-//             $content = array('chat_id' => $chat_id, 'text' => "گزینه ارسال پیام به پشتیبانی را انتخاب کردید");
-//             $telegram->sendMessage($content);
-
-//         } else {
-//             $Home_key = json_encode([
-//                 "keyboard" =>
-//                     [
-//                         [['text' => 'بدهی'], ['text' => 'انتخاب واحد']],
-//                         [['text' => 'ارسال پیام به پشتیبانی']],
-//                     ],
-//                 "resize_keyboard" => true
-//             ]);
-
-//             $content = array('chat_id' => $chat_id, 'reply_markup' => $Home_key, 'text' => "عملیات مورد نظر خود را از قسمت زیر انتخاب کنید");
-//             $telegram->sendMessage($content);
-//         }
+// $telegram->sendMessage([
+//     'chat_id' => $chat_id,
+//     'text' => $photo_file_id
+// ]);
 
 
-//     } else {
-//         $Home_key = json_encode([
-//             "keyboard" =>
-//                 [
-//                     [['text' => 'ثبت نام جدید']],
-//                 ],
-//             "resize_keyboard" => true
-//         ]);
 
-//         $content = array('chat_id' => $chat_id, 'reply_markup' => $Home_key, 'text' => "متن ثبت نام جدید");
-//         $telegram->sendMessage($content);
-//     }
-// } else {
+// // ارسال تصویر به کانال
+// $telegram->sendPhoto([
+//     'chat_id' => $picPayment,
+//     'photo' => $photo_file_id
+// ]);
 
-// $telegram->sendChatAction($action_typing);
 
-// بررسی لول های ثبت نام
-$SB_Query = $pdo->prepare("SELECT * FROM Start_Bot WHERE SB_Chatid = '$chat_id'");
-$SB_Query->execute();
-$rows_SB = $SB_Query->fetch(PDO::FETCH_ASSOC);
 
-// زمانی که از دکمه استارت برای ریست کردن وضعیت های کاربر استفاده میکنه
-if ($text == '/start' || $rows_SB['SB_Step'] == 0) {
-    if (isset($rows_SB['SB_Chatid'])) {
-        // حذف یوزر قدیمی برای ثبت نام
-        $Dstmt = $pdo->prepare("DELETE FROM Start_Bot WHERE SB_Chatid = '$chat_id'");
+
+
+##############################################################
+// $start_key = json_encode([
+//     "keyboard" =>
+//         [
+//             [['text' => "اشتراک گزاری شماره تماش", 'request_contact' => true,]],
+//         ],
+//     "resize_keyboard" => true,
+//     'one_time_keyboard' => false,
+// ]);
+
+// $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "مورد نظر را انتخاب کنید");
+// $telegram->sendMessage($content);
+##############################################################
+
+
+
+
+
+###########################################################
+// // خواندن مقادیر از دیتابیس لیست فایل آی دی ها
+// $stmt = $pdo->query("SELECT FI_FileID FROM File_Id WHERE FI_Chatid = '$chat_id'");
+// $file_ids = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+// $media = [];
+// foreach ($file_ids as $file_id) {
+//     $media[] = [
+//         'type' => 'photo',
+//         'media' => $file_id['FI_FileID']
+//     ];
+// }
+
+// // ارسال گروهی تصاویر به کانال
+// $telegram->sendMediaGroup([
+//     'chat_id' => $picPayment,
+//     'media' => json_encode($media)
+// ]);
+###########################################################
+
+
+
+
+
+
+
+
+
+
+
+if ($rows_UR['UR_Chatid']) {
+
+
+
+    $telegram->sendChatAction($action_typing);
+
+
+    if ($msgType == 'message' && $text == '/start') {
+        $start_key = json_encode([
+            "keyboard" =>
+                [
+                    [['text' => 'ارسال پیام'], ['text' => "ارسال رسید پرداختی"]],
+                    [['text' => 'ویرایش شماره تماس'], ['text' => "ارسال مدارک"]],
+                    [['text' => "تست مجدد ثبت نام دانشجو"]],
+                ],
+            "resize_keyboard" => true
+        ]);
+
+        $telegram->sendMessage([
+            'chat_id' => $chat_id,
+            'reply_markup' => $start_key,
+            'text' => "♻️ خدمات مورد نظر خود را انتخاب کنید"
+        ]);
+    } else if ($text == "تست مجدد ثبت نام دانشجو") {
+        // حذف رکورد پس از تکمیل ثبت نام
+        $Dstmt = $pdo->prepare("DELETE FROM User_Register WHERE UR_Chatid = '$chat_id'");
         $Dstmt->execute();
 
-        // ساخت یوزر جدید برای ثبت نام
-        $Istmt = $pdo->prepare("INSERT INTO Start_Bot(SB_Chatid) VALUES (?)");
-        $Istmt->execute([$chat_id]);
 
-        $content = array(
-            'chat_id' => $chat_id,
-            'text' => "🔰 لطفا فقط «نام» خود را وارد کنید.
-🔅مثال: پژمان"
-        );
-        $telegram->sendMessage($content);
-    } else {
-        // ساخت یوزر جدید برای ثبت نام
-        $Istmt = $pdo->prepare("INSERT INTO Start_Bot(SB_Chatid) VALUES (?)");
-        $Istmt->execute([$chat_id]);
 
-        $content = array(
+
+
+        $start_key = json_encode([
+            "keyboard" =>
+                [
+                    [['text' => "شروع"]],
+                ],
+            "resize_keyboard" => true
+        ]);
+
+        $telegram->sendMessage([
             'chat_id' => $chat_id,
-            'text' => "🔰 لطفا فقط «نام» خود را وارد کنید.
-🔅مثال: پژمان"
-        );
-        $telegram->sendMessage($content);
+            'text' => "♻️ اطلاعات از دیتابیس برای تست مجدد محیط ثبت نام حذف شد ♻️",
+            'reply_markup' => $start_key
+        ]);
     }
-} else if ($rows_SB['SB_Step'] == 1) {
-    if ($msgType == 'message') {
+    // elseif ($msgType == 'message' && $text == 'ارسال پیام') {
 
-        if (preg_match('/[\x{0600}-\x{06FF}]/u', $text)) {
-            // بررسی می کنیم که آیا متن ورودی بیشتر از 30 کاراکتر دارد یا خیر
-            if (mb_strlen($text) < 30) {
+    // }
+    // elseif ($msgType == 'message' && $text == 'ارسال پیام به پشتیبانی') {
+    //     $content = array('chat_id' => $chat_id, 'text' => "گزینه ارسال پیام به پشتیبانی را انتخاب کردید");
+    //     $telegram->sendMessage($content);
 
-                $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Name = ?  WHERE SB_Chatid = '$chat_id'");
-                $stmt->execute([2, $text]);
+    // } else {
+    //     $Home_key = json_encode([
+    //         "keyboard" =>
+    //             [
+    //                 [['text' => 'بدهی'], ['text' => 'انتخاب واحد']],
+    //                 [['text' => 'ارسال پیام به پشتیبانی']],
+    //             ],
+    //         "resize_keyboard" => true
+    //     ]);
 
+    //     $content = array('chat_id' => $chat_id, 'reply_markup' => $Home_key, 'text' => "عملیات مورد نظر خود را از قسمت زیر انتخاب کنید");
+    //     $telegram->sendMessage($content);
+    // }
+
+} else if (!$msgGroup) {
+
+    $telegram->sendChatAction($action_typing);
+
+    // بررسی لول های ثبت نام
+    $SB_Query = $pdo->prepare("SELECT * FROM Start_Bot WHERE SB_Chatid = '$chat_id'");
+    $SB_Query->execute();
+    $rows_SB = $SB_Query->fetch(PDO::FETCH_ASSOC);
+
+    // زمانی که از دکمه استارت برای ریست کردن وضعیت های کاربر استفاده میکنه
+    if ($text == '/start' || $rows_SB['SB_Step'] == 0) {
+        if (isset($rows_SB['SB_Chatid'])) {
+            // حذف یوزر قدیمی برای ثبت نام
+            $Dstmt = $pdo->prepare("DELETE FROM Start_Bot WHERE SB_Chatid = '$chat_id'");
+            $Dstmt->execute();
+
+            // ساخت یوزر جدید برای ثبت نام
+            $Istmt = $pdo->prepare("INSERT INTO Start_Bot(SB_Chatid) VALUES (?)");
+            $Istmt->execute([$chat_id]);
+
+            $content = array(
+                'chat_id' => $chat_id,
+                'text' => "🔰 لطفا فقط «نام» خود را وارد کنید.
+🔅مثال: پژمان"
+            );
+            $telegram->sendMessage($content);
+        } else {
+            // ساخت یوزر جدید برای ثبت نام
+            $Istmt = $pdo->prepare("INSERT INTO Start_Bot(SB_Chatid) VALUES (?)");
+            $Istmt->execute([$chat_id]);
+
+            $content = array(
+                'chat_id' => $chat_id,
+                'text' => "🔰 لطفا فقط «نام» خود را وارد کنید.
+🔅مثال: پژمان"
+            );
+            $telegram->sendMessage($content);
+        }
+    } else if ($rows_SB['SB_Step'] == 1) {
+        if ($msgType == 'message') {
+
+            if (preg_match('/[\x{0600}-\x{06FF}]/u', $text)) {
+                // بررسی می کنیم که آیا متن ورودی بیشتر از 30 کاراکتر دارد یا خیر
+                if (mb_strlen($text) < 30) {
+
+                    $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Name = ?  WHERE SB_Chatid = '$chat_id'");
+                    $stmt->execute([2, $text]);
+
+                    $start_key = json_encode([
+                        "keyboard" =>
+                            [
+                                [['text' => "بازگشت"]],
+                            ],
+                        "resize_keyboard" => true
+                    ]);
+
+                    $content = array(
+                        'chat_id' => $chat_id,
+                        'reply_markup' => $start_key,
+                        'text' => '🔰 لطفا فقط «نام خانوادگی» خود را وارد کنید.
+🔅مثال: حاجی پور'
+                    );
+                    $telegram->sendMessage($content);
+
+                } else {
+                    $content = ['chat_id' => $chat_id, 'text' => '⚠️ نام نیاید بیشتر از ۳۰ کارکتر باشد.'];
+                    $telegram->sendMessage($content);
+                }
+
+            } else {
+                $content = ['chat_id' => $chat_id, 'text' => '⚠️ لطفاً فقط متن فارسی وارد کنید.'];
+                $telegram->sendMessage($content);
+            }
+
+        } else {
+            $content = array('chat_id' => $chat_id, 'text' => "⚠️ فقط مجاز به وارد کردن متن هستید.");
+            $telegram->sendMessage($content);
+        }
+
+    } else if ($rows_SB['SB_Step'] == 2) {
+        if ($text == "بازگشت") {
+            $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Name = ?  WHERE SB_Chatid = '$chat_id'");
+            $stmt->execute([1, ""]);
+
+            $telegram->sendMessage([
+                'chat_id' => $chat_id,
+                'text' => "🔰 لطفا فقط «نام» خود را وارد کنید.
+🔅مثال: پژمان",
+                'reply_markup' => json_encode([
+                    'remove_keyboard' => true
+                ])
+            ]);
+
+        } else if ($msgType == 'message') {
+            if (preg_match('/[\x{0600}-\x{06FF}]/u', $text)) {
+                // بررسی می کنیم که آیا متن ورودی بیشتر از 50 کاراکتر دارد یا خیر
+                if (mb_strlen($text) < 50) {
+
+                    $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Family = ?  WHERE SB_Chatid = '$chat_id'");
+                    $stmt->execute([3, $text]);
+
+                    $content = [
+                        'chat_id' => $chat_id,
+                        'text' => '🔰 لطفا «کد ملی» خود را وارد کنید.
+🔅مثال: ۱۲۳۴۵۶۷۸۹۰'
+                    ];
+                    $telegram->sendMessage($content);
+                } else {
+                    $content = ['chat_id' => $chat_id, 'text' => '⚠️ نام خانوادگی نیاید بیشتر از ۵۰ کارکتر باشد.'];
+                    $telegram->sendMessage($content);
+                }
+
+            } else {
+                $content = ['chat_id' => $chat_id, 'text' => '⚠️ لطفاً فقط متن فارسی وارد کنید.'];
+                $telegram->sendMessage($content);
+            }
+        } else {
+            $content = array('chat_id' => $chat_id, 'text' => "⚠️ فقط مجاز به وارد کردن متن هستید.");
+            $telegram->sendMessage($content);
+        }
+
+    } else if ($rows_SB['SB_Step'] == 3) {
+        if ($text == "بازگشت") {
+            $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Family = ?  WHERE SB_Chatid = '$chat_id'");
+            $stmt->execute([2, ""]);
+
+            $telegram->sendMessage([
+                'chat_id' => $chat_id,
+                'text' => "🔰 لطفا فقط «نام خانوادگی» خود را وارد کنید.
+🔅مثال: حاجی پور",
+                'reply_markup' => json_encode([
+                    'remove_keyboard' => false
+                ])
+            ]);
+
+        } else if ($msgType == 'message' && strlen($EN_Number) == 10 && is_numeric($EN_Number) == 1) {
+            if (checkMeliCode($EN_Number)) {
+                // بررسی اینکه قبلا کد ملی در دیتابیس ثبت نام شده است یا خیر
+                $UR_Query = $pdo->prepare("SELECT UR_Meli FROM User_Register WHERE UR_Meli = '$EN_Number'");
+                $UR_Query->execute();
+                $rows_UR = $UR_Query->fetch(PDO::FETCH_ASSOC);
+
+                if (!$rows_UR['UR_Meli']) {
+
+                    $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Meli = ?  WHERE SB_Chatid = '$chat_id'");
+                    $stmt->execute([4, $EN_Number]);
+
+
+
+                    $content = [
+                        'chat_id' => $chat_id,
+                        'text' => '🔰 لطفا «شماره موبایل» خود را وارد کنید.
+🔅مثال: ۰۹۱۲۱۲۳۴۵۶۷۸۹'
+                    ];
+                    $telegram->sendMessage($content);
+
+
+
+
+
+                } else {
+                    $content = array('chat_id' => $chat_id, 'text' => "⚠️ این کد ملی در سیستم ثبت نام کرده است.");
+                    $telegram->sendMessage($content);
+                }
+            } else {
+                $content = array('chat_id' => $chat_id, 'text' => "⚠️ همچین کد ملی در ثبت احوال ثبت نشده است.");
+                $telegram->sendMessage($content);
+            }
+
+        } else if ($msgType == 'message') {
+            if (is_numeric($EN_Number) != 1) {
                 $start_key = json_encode([
                     "keyboard" =>
                         [
-                            [['text' => "بازگشت"]],
+                            [['text' => 'بازگشت']],
                         ],
                     "resize_keyboard" => true
                 ]);
@@ -403,284 +625,290 @@ if ($text == '/start' || $rows_SB['SB_Step'] == 0) {
                 $content = array(
                     'chat_id' => $chat_id,
                     'reply_markup' => $start_key,
-                    'text' => '🔰 لطفا فقط «نام خانوادگی» خود را وارد کنید.
-🔅مثال: احمدی'
+                    'text' => "⚠️ کد ملی را بصورت عددی وارد نمایید."
                 );
                 $telegram->sendMessage($content);
+            } else if (strlen($EN_Number) != 10) {
+                $start_key = json_encode([
+                    "keyboard" =>
+                        [
+                            [['text' => 'بازگشت']],
+                        ],
+                    "resize_keyboard" => true
+                ]);
 
-            } else {
-                $content = ['chat_id' => $chat_id, 'text' => '⚠️ نام نیاید بیشتر از ۳۰ کارکتر باشد.'];
+                $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "⚠️ کد ملی شامل ۱۰ کارکتر می باشد.");
                 $telegram->sendMessage($content);
             }
-
         } else {
-            $content = ['chat_id' => $chat_id, 'text' => '⚠️ لطفاً فقط متن فارسی وارد کنید.'];
+            $start_key = json_encode([
+                "keyboard" =>
+                    [
+                        [['text' => 'بازگشت']],
+                    ],
+                "resize_keyboard" => true
+            ]);
+
+            $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "⚠️ فقط مجاز به وارد کردن کد ملی هستید.");
             $telegram->sendMessage($content);
         }
 
-    } else {
-        $content = array('chat_id' => $chat_id, 'text' => "⚠️ فقط مجاز به وارد کردن متن هستید.");
-        $telegram->sendMessage($content);
-    }
+    } else if ($rows_SB['SB_Step'] == 4) {
+        if ($text == "بازگشت") {
+            $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Meli = ?  WHERE SB_Chatid = '$chat_id'");
+            $stmt->execute([3, ""]);
 
-} else if ($rows_SB['SB_Step'] == 2) {
-    if ($text == "بازگشت") {
-        $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Name = ?  WHERE SB_Chatid = '$chat_id'");
-        $stmt->execute([1, ""]);
-
-        $telegram->sendMessage([
-            'chat_id' => $chat_id,
-            'text' => "🔰 لطفا فقط «نام» خود را وارد کنید.
-🔅مثال: پژمان",
-            'reply_markup' => json_encode([
-                'remove_keyboard' => true
-            ])
-        ]);
-
-    } else if ($msgType == 'message') {
-        if (preg_match('/[\x{0600}-\x{06FF}]/u', $text)) {
-            // بررسی می کنیم که آیا متن ورودی بیشتر از 50 کاراکتر دارد یا خیر
-            if (mb_strlen($text) < 50) {
-
-                $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Family = ?  WHERE SB_Chatid = '$chat_id'");
-                $stmt->execute([3, $text]);
-
-                $content = [
-                    'chat_id' => $chat_id,
-                    'text' => '🔰 لطفا «کد ملی» خود را وارد کنید.
+            $telegram->sendMessage([
+                'chat_id' => $chat_id,
+                'text' => '🔰 لطفا «کد ملی» خود را وارد کنید.
 🔅مثال: ۱۲۳۴۵۶۷۸۹۰'
-                ];
-                $telegram->sendMessage($content);
-            } else {
-                $content = ['chat_id' => $chat_id, 'text' => '⚠️ نام خانوادگی نیاید بیشتر از ۵۰ کارکتر باشد.'];
-                $telegram->sendMessage($content);
-            }
+            ]);
 
-        } else {
-            $content = ['chat_id' => $chat_id, 'text' => '⚠️ لطفاً فقط متن فارسی وارد کنید.'];
-            $telegram->sendMessage($content);
-        }
-    } else {
-        $content = array('chat_id' => $chat_id, 'text' => "⚠️ فقط مجاز به وارد کردن متن هستید.");
-        $telegram->sendMessage($content);
-    }
-
-} else if ($rows_SB['SB_Step'] == 3) {
-    if ($text == "بازگشت") {
-        $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Family = ?  WHERE SB_Chatid = '$chat_id'");
-        $stmt->execute([2, ""]);
-
-        $telegram->sendMessage([
-            'chat_id' => $chat_id,
-            'text' => "🔰 لطفا فقط «نام خانوادگی» خود را وارد کنید.
-🔅مثال: احمدی",
-            'reply_markup' => json_encode([
-                'remove_keyboard' => false
-            ])
-        ]);
-
-    } else if ($msgType == 'message' && strlen($EN_Number) == 10 && is_numeric($EN_Number) == 1) {
-        if (checkMeliCode($EN_Number)) {
-            // بررسی اینکه قبلا کد ملی در دیتابیس ثبت نام شده است یا خیر
-            $UR_Query = $pdo->prepare("SELECT UR_Meli FROM User_Register WHERE UR_Meli = '$EN_Number'");
+        } else if ($msgType == 'message' && strlen($EN_Number) == 11 && is_numeric($EN_Number) == 1) {
+            // بررسی اینکه قبلا شماره موبایل در دیتابیس ثبت نام شده است یا خیر
+            $UR_Query = $pdo->prepare("SELECT UR_Mob FROM User_Register WHERE UR_Mob = '$EN_Number'");
             $UR_Query->execute();
             $rows_UR = $UR_Query->fetch(PDO::FETCH_ASSOC);
 
-            if (!$rows_UR['UR_Meli']) {
+            if (!$rows_UR['UR_Mob']) {
 
-                $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Meli = ?  WHERE SB_Chatid = '$chat_id'");
-                $stmt->execute([4, $EN_Number]);
+                $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Mob = ?  WHERE SB_Chatid = '$chat_id'");
+                $stmt->execute([5, $EN_Number]);
 
-                // خواندن مقادیر از دیتابیس لیست دانشگاه
-                $stmt = $pdo->query("SELECT UL_Name FROM Uni_List");
-                $buttonNames = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-
-                // ایجاد دکمه ها
-                $buttons = [];
-                foreach ($buttonNames as $buttonName) {
-                    $buttons[] = [$buttonName['UL_Name']];
-                }
-
-                $buttons[] = ['بازگشت'];
-
-                // ایجاد کیبورد
-                $keyboard = ['keyboard' => $buttons, 'resize_keyboard' => true];
-
-                // ارسال پیام با کیبورد
-                $telegram->sendMessage([
-                    'chat_id' => $chat_id,
-                    'text' => '🔰 لطفا دانشگاه خود را از لیست زیر انتخاب نمایید.',
-                    'reply_markup' => json_encode($keyboard)
+                $start_key = json_encode([
+                    "keyboard" =>
+                        [
+                            [['text' => "اشتراک گزاری شماره تلگرام", 'request_contact' => true,]],
+                            [['text' => "بازگشت"]],
+                        ],
+                    "resize_keyboard" => true,
+                    'one_time_keyboard' => false,
                 ]);
 
+                $content = [
+                    'chat_id' => $chat_id,
+                    'text' => "🔰 لطفا «شماره تلگرام» خود را وارد کنید و یا از دکمه «اشتراک گزاری شماره تلگرام» استفاده نمایید.",
+                    'reply_markup' => $start_key
+                ];
+                $telegram->sendMessage($content);
+
             } else {
-                $content = array('chat_id' => $chat_id, 'text' => "⚠️ این کد ملی در سیستم ثبت نام کرده است.");
+                $content = array('chat_id' => $chat_id, 'text' => "⚠️ این شماره موبایل در سیستم ثبت نام کرده است.");
+                $telegram->sendMessage($content);
+            }
+
+
+        } else if ($msgType == 'message') {
+            if (is_numeric($EN_Number) != 1) {
+                $start_key = json_encode([
+                    "keyboard" =>
+                        [
+                            [['text' => 'بازگشت']],
+                        ],
+                    "resize_keyboard" => true
+                ]);
+
+                $content = array(
+                    'chat_id' => $chat_id,
+                    'reply_markup' => $start_key,
+                    'text' => "⚠️ شماره موبایل را بصورت عددی وارد نمایید."
+                );
+                $telegram->sendMessage($content);
+            } else if (strlen($EN_Number) != 11) {
+                $start_key = json_encode([
+                    "keyboard" =>
+                        [
+                            [['text' => 'بازگشت']],
+                        ],
+                    "resize_keyboard" => true
+                ]);
+
+                $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "⚠️ شماره موبایل شامل ۱۱ کارکتر می باشد.");
                 $telegram->sendMessage($content);
             }
         } else {
-            $content = array('chat_id' => $chat_id, 'text' => "⚠️ همچین کد ملی در ثبت احوال ثبت نشده است.");
-            $telegram->sendMessage($content);
-        }
-
-    } else if ($msgType == 'message') {
-        if (is_numeric($EN_Number) != 1) {
-            $start_key = json_encode([
-                "keyboard" =>
-                    [
-                        [['text' => 'بازگشت']],
-                    ],
-                "resize_keyboard" => true
-            ]);
-
-            $content = array(
+            $telegram->sendMessage([
                 'chat_id' => $chat_id,
                 'reply_markup' => $start_key,
-                'text' => "⚠️ کد ملی را بصورت عددی وارد نمایید."
-            );
-            $telegram->sendMessage($content);
-        } else if (strlen($EN_Number) != 10) {
+                'text' => "⚠️ فقط مجاز به وارد کردن شماره موبایل هستید."
+            ]);
+        }
+
+
+
+
+
+    } else if ($rows_SB['SB_Step'] == 5) {
+        if ($text == "بازگشت") {
+            $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Mob = ?  WHERE SB_Chatid = '$chat_id'");
+            $stmt->execute([4, ""]);
+
+
             $start_key = json_encode([
                 "keyboard" =>
-                    [
-                        [['text' => 'بازگشت']],
-                    ],
+                    [[['text' => 'بازگشت']]],
                 "resize_keyboard" => true
             ]);
 
-            $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "⚠️ کد ملی شامل ۱۰ کارکتر می باشد.");
-            $telegram->sendMessage($content);
-        }
-    } else {
-        $start_key = json_encode([
-            "keyboard" =>
-                [
-                    [['text' => 'بازگشت']],
-                ],
-            "resize_keyboard" => true
-        ]);
+            $telegram->sendMessage([
+                'chat_id' => $chat_id,
+                'text' => '🔰 لطفا «شماره موبایل» خود را وارد کنید.
+🔅مثال: ۰۹۱۲۱۲۳۴۵۶۷۸۹',
+                'reply_markup' => $start_key
+            ]);
 
-        $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "⚠️ فقط مجاز به وارد کردن کد ملی هستید.");
-        $telegram->sendMessage($content);
-    }
+        } else if ($msgType == 'contact') {
 
-} else if ($rows_SB['SB_Step'] == 4) {  
-    if ($msgType == 'message') {
+            $phone_number = substr_replace($contact, '0', 0, 2);
 
-        // خواندن مقادیر از دیتابیس لیست دانشگاه
-        $stmt = $pdo->query("SELECT UL_Name FROM Uni_List");
-        $buttonNames = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // بررسی اینکه قبلا شماره موبایل در دیتابیس ثبت نام شده است یا خیر
+            $UR_Query = $pdo->prepare("SELECT UR_MobTelegram FROM User_Register WHERE UR_MobTelegram = '$phone_number'");
+            $UR_Query->execute();
+            $rows_UR = $UR_Query->fetch(PDO::FETCH_ASSOC);
 
-        // بررسی متن ارسالی کاربر
-        $userMessage = $text; // جایگزین کنید با متن ارسالی کاربر
-        $isValid = false;
-        foreach ($buttonNames as $buttonName) {
-            if ($userMessage == $buttonName['UL_Name'] || $userMessage == 'بازگشت') {
-                $isValid = true;
-                break;
-            }
-        }
+            if (!$rows_UR['UR_MobTelegram']) {
 
-        // اگر متن ارسالی کاربر با نام هیچ یک از دکمه‌ها مطابقت نداشت، پیام خطا ارسال کنید
-        if ($isValid) {
-            if ($text == "بازگشت") {
-                $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Meli = ?  WHERE SB_Chatid = '$chat_id'");
-                $stmt->execute([3, ""]);
-
+                $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_MobTelegram = ?  WHERE SB_Chatid = '$chat_id'");
+                $stmt->execute([6, $phone_number]);
 
                 $start_key = json_encode([
                     "keyboard" =>
                         [
-                            [['text' => 'بازگشت']],
+                            [['text' => "ندارم"]],
+                            [['text' => "بازگشت"]]
                         ],
                     "resize_keyboard" => true
                 ]);
 
                 $telegram->sendMessage([
                     'chat_id' => $chat_id,
-                    'reply_markup' => $start_key,
-                    'text' => '🔰 لطفا «کد ملی» خود را وارد کنید.
-🔅مثال: ۱۲۳۴۵۶۷۸۹۰'
+                    'text' => "🔰 لطفا «شماره تلفن ثابت» خود را وارد کنید، در غیر این صورت روی دکمه «ندارم» کلیک کنید.",
+                    'reply_markup' => $start_key
+                ]);
+            } else {
+                $content = array('chat_id' => $chat_id, 'text' => "⚠️ این شماره موبایل تلگرام در سیستم ثبت نام کرده است.");
+                $telegram->sendMessage($content);
+            }
+
+        } else if ($msgType == 'message' && strlen($EN_Number) == 11 && is_numeric($EN_Number) == 1) {
+            // بررسی اینکه قبلا شماره موبایل در دیتابیس ثبت نام شده است یا خیر
+            $UR_Query = $pdo->prepare("SELECT UR_MobTelegram FROM User_Register WHERE UR_MobTelegram = '$EN_Number'");
+            $UR_Query->execute();
+            $rows_UR = $UR_Query->fetch(PDO::FETCH_ASSOC);
+
+            if (!$rows_UR['UR_MobTelegram']) {
+
+                $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_MobTelegram = ?  WHERE SB_Chatid = '$chat_id'");
+                $stmt->execute([6, $EN_Number]);
+
+                $start_key = json_encode([
+                    "keyboard" =>
+                        [
+                            [['text' => "ندارم"]],
+                            [['text' => "بازگشت"]]
+                        ],
+                    "resize_keyboard" => true
+                ]);
+
+                $telegram->sendMessage([
+                    'chat_id' => $chat_id,
+                    'text' => "🔰 لطفا «شماره تلفن ثابت» خود را وارد کنید، در غیر این صورت روی دکمه «ندارم» کلیک کنید.",
+                    'reply_markup' => $start_key
                 ]);
 
             } else {
+                $content = array('chat_id' => $chat_id, 'text' => "⚠️ این شماره موبایل تلگرام در سیستم ثبت نام کرده است.");
+                $telegram->sendMessage($content);
+            }
 
-                $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Uni = ?  WHERE SB_Chatid = '$chat_id'");
-                $stmt->execute([5, $text]);
 
+        } else if ($msgType == 'message') {
+            if (is_numeric($EN_Number) != 1) {
                 $start_key = json_encode([
                     "keyboard" =>
                         [
-                            [['text' => '✅ تایید ثبت نام ✅']],
                             [['text' => 'بازگشت']],
                         ],
                     "resize_keyboard" => true
                 ]);
 
-                $numEN = $rows_SB['SB_Meli'];
-
-                $numFA = tr_num($numEN, 'fa');
-
-                $telegram->sendMessage([
+                $content = array(
                     'chat_id' => $chat_id,
                     'reply_markup' => $start_key,
-                    'text' => "♻️ آیا اطلاعات خود را تایید میکنید؟
-🔅 نام:  {$rows_SB['SB_Name']}
-🔅 نام خانوادگی: {$rows_SB['SB_Family']}
-🔅 کد ملی: {$numFA}
-🔅 دانشگاه: {$text}"
+                    'text' => "⚠️ شماره موبایل تلگرام را بصورت عددی وارد نمایید."
+                );
+                $telegram->sendMessage($content);
+            } else if (strlen($EN_Number) != 11) {
+                $start_key = json_encode([
+                    "keyboard" =>
+                        [
+                            [['text' => 'بازگشت']],
+                        ],
+                    "resize_keyboard" => true
                 ]);
 
+                $content = array('chat_id' => $chat_id, 'reply_markup' => $start_key, 'text' => "⚠️ شماره موبایل تلگرام شامل ۱۱ کارکتر می باشد.");
+                $telegram->sendMessage($content);
             }
         } else {
             $telegram->sendMessage([
                 'chat_id' => $chat_id,
-                'text' => '⚠️ فقط مجاز به انتخاب دانشگاه از دکمه های زیر هستید.', // جایگزین کنید با پیام خطای مورد نظر شما
+                'text' => "⚠️ فقط مجاز به وارد کردن شماره موبایل تلگرام هستید."
             ]);
         }
-    }else{
-        $telegram->sendMessage([
-            'chat_id' => $chat_id,
-            'text' => '⚠️ فقط مجاز به استفاده از دکمه های زیر می باشد.',
-        ]);
-    }
-} else if ($rows_SB['SB_Step'] == 5) {
-    if ($msgType == 'message') {
-        if ($text == "✅ تایید ثبت نام ✅") {
+    } else if ($rows_SB['SB_Step'] == 6) {
 
-            // ذخیره دانشجو در لیست ثبت نام
-            $stmt = $pdo->prepare("INSERT INTO User_Register (UR_Chatid, UR_Name, UR_Family, UR_Meli, UR_Uni, UR_Date) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->execute([
-                $chat_id,
-                $rows_SB['SB_Name'],
-                $rows_SB['SB_Family'],
-                $rows_SB['SB_Meli'],
-                $rows_SB['SB_Uni'],
-                tr_num($jdf_Unix, 'en')
-            ]);
+        if ($text == "بازگشت") {
+            $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_MobTelegram = ?  WHERE SB_Chatid = '$chat_id'");
+            $stmt->execute([5, ""]);
 
-            // حذف رکورد پس از تکمیل ثبت نام
-            $Dstmt = $pdo->prepare("DELETE FROM Start_Bot WHERE SB_Chatid = '$chat_id'");
-            $Dstmt->execute();
 
             $start_key = json_encode([
                 "keyboard" =>
                     [
-                        [['text' => 'ارسال پیام'], ['text' => "ارسال رسید پرداختی"]],
-                        [['text' => 'ویرایش شماره تماس'], ['text' => "ارسال مدارک"]],
+                        [['text' => "اشتراک گزاری شماره تلگرام", 'request_contact' => true,]],
+                        [['text' => "بازگشت"]],
                     ],
-                "resize_keyboard" => true
+                "resize_keyboard" => true,
+                'one_time_keyboard' => false,
             ]);
 
+            $content = [
+                'chat_id' => $chat_id,
+                'text' => "🔰 لطفا «شماره تلگرام» خود را وارد کنید و یا از دکمه «اشتراک گزاری شماره تلگرام» استفاده نمایید.",
+                'reply_markup' => $start_key
+            ];
+            $telegram->sendMessage($content);
+
+        } else if ($text == 'ندارم') {
+            $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Phone = ?  WHERE SB_Chatid = '$chat_id'");
+            $stmt->execute([7, 'ندارد']);
+
+            // خواندن مقادیر از دیتابیس لیست دانشگاه
+            $stmt = $pdo->query("SELECT UL_Name FROM Uni_List");
+            $buttonNames = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // ایجاد دکمه ها
+            $buttons = [];
+            foreach ($buttonNames as $buttonName) {
+                $buttons[] = [$buttonName['UL_Name']];
+            }
+
+            $buttons[] = ['بازگشت'];
+
+            // ایجاد کیبورد
+            $keyboard = ['keyboard' => $buttons, 'resize_keyboard' => true];
+
+            // ارسال پیام با کیبورد
             $telegram->sendMessage([
                 'chat_id' => $chat_id,
-                'reply_markup' => $start_key,
-                'text' => "♻️ {$rows_SB['SB_Name']} عزیز خوش آمدی، ثبت نام شما با موفقیت انجام شد."
+                'text' => '🔰 لطفا دانشگاه خود را از لیست زیر انتخاب نمایید.',
+                'reply_markup' => json_encode($keyboard)
             ]);
+        } else if ($msgType == 'message' && strlen($EN_Number) == 11 && is_numeric($EN_Number) == 1) {
 
-        } else if ($text == 'بازگشت') {
-            $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Uni = ?  WHERE SB_Chatid = '$chat_id'");
-            $stmt->execute([4, ""]);
+            $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Phone = ?  WHERE SB_Chatid = '$chat_id'");
+            $stmt->execute([7, $EN_Number]);
 
             // خواندن مقادیر از دیتابیس لیست دانشگاه
             $stmt = $pdo->query("SELECT UL_Name FROM Uni_List");
@@ -705,17 +933,187 @@ if ($text == '/start' || $rows_SB['SB_Step'] == 0) {
                 'reply_markup' => json_encode($keyboard)
             ]);
 
+        } else if ($msgType == 'message') {
+            if (is_numeric($EN_Number) != 1) {
+                $telegram->sendMessage([
+                    'chat_id' => $chat_id,
+                    'text' => "⚠️ شماره ثابت را بصورت عددی وارد نمایید."
+                ]);
+            } else if (strlen($EN_Number) != 11) {
+                $telegram->sendMessage([
+                    'chat_id' => $chat_id,
+                    'text' => "⚠️ شماره ثابت به همراه کد شهر شامل ۱۱ کارکتر می باشد."
+                ]);
+            }
+        } else {
+            $telegram->sendMessage([
+                'chat_id' => $chat_id,
+                'text' => "⚠️ فقط مجاز به وارد کردن شماره ثابت هستید."
+            ]);
         }
-    } else {
-        $telegram->sendMessage([
-            'chat_id' => $chat_id,
-            'text' => '⚠️ فقط مجاز به استفاده از دکمه های زیر می باشد.',
-        ]);
+
+    } else if ($rows_SB['SB_Step'] == 7) {
+        if ($msgType == 'message') {
+
+            // خواندن مقادیر از دیتابیس لیست دانشگاه
+            $stmt = $pdo->query("SELECT UL_Name FROM Uni_List");
+            $buttonNames = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // بررسی متن ارسالی کاربر
+            $userMessage = $text; // جایگزین کنید با متن ارسالی کاربر
+            $isValid = false;
+            foreach ($buttonNames as $buttonName) {
+                if ($userMessage == $buttonName['UL_Name'] || $userMessage == 'بازگشت') {
+                    $isValid = true;
+                    break;
+                }
+            }
+
+            // اگر متن ارسالی کاربر با نام هیچ یک از دکمه‌ها مطابقت نداشت، پیام خطا ارسال کنید
+            if ($isValid) {
+                if ($text == "بازگشت") {
+                    $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Phone = ?  WHERE SB_Chatid = '$chat_id'");
+                    $stmt->execute([6, ""]);
+
+                    $start_key = json_encode([
+                        "keyboard" =>
+                            [
+                                [['text' => "ندارم"]],
+                                [['text' => "بازگشت"]]
+                            ],
+                        "resize_keyboard" => true
+                    ]);
+
+                    $telegram->sendMessage([
+                        'chat_id' => $chat_id,
+                        'text' => "🔰 لطفا «شماره تلفن ثابت» خود را وارد کنید، در غیر این صورت روی دکمه «ندارم» کلیک کنید.",
+                        'reply_markup' => $start_key
+                    ]);
+
+                } else {
+
+                    $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Uni = ?  WHERE SB_Chatid = '$chat_id'");
+                    $stmt->execute([8, $text]);
+
+                    $start_key = json_encode([
+                        "keyboard" =>
+                            [
+                                [['text' => '✅ تایید ثبت نام ✅']],
+                                [['text' => 'بازگشت']],
+                            ],
+                        "resize_keyboard" => true
+                    ]);
+
+                    $MeliEN = $rows_SB['SB_Meli'];
+                    $MobEN = $rows_SB['SB_Mob'];
+                    $MobTelegramiEN = $rows_SB['SB_MobTelegram'];
+                    $PhoneEN = $rows_SB['SB_Phone'];
+
+                    $MeliFA = tr_num($MeliEN, 'fa');
+                    $MobFA = tr_num($MobEN, 'fa');
+                    $MobTelegramFA = tr_num($MobTelegramiEN, 'fa');
+                    $PhoneFA = tr_num($PhoneEN, 'fa');
+
+                    $telegram->sendMessage([
+                        'chat_id' => $chat_id,
+                        'reply_markup' => $start_key,
+                        'text' => "♻️ آیا اطلاعات خود را تایید میکنید؟
+🔅 نام:  {$rows_SB['SB_Name']}
+🔅 نام خانوادگی: {$rows_SB['SB_Family']}
+🔅 کد ملی: {$MeliFA}
+🔅 شماره موبایل: {$MobFA}
+🔅 شماره تلگرام: {$MobTelegramFA}
+🔅 تلفن ثابت: {$PhoneFA}
+🔅 دانشگاه: {$text}"
+                    ]);
+
+                }
+            } else {
+                $telegram->sendMessage([
+                    'chat_id' => $chat_id,
+                    'text' => '⚠️ فقط مجاز به انتخاب دانشگاه از دکمه های زیر هستید.', // جایگزین کنید با پیام خطای مورد نظر شما
+                ]);
+            }
+        } else {
+            $telegram->sendMessage([
+                'chat_id' => $chat_id,
+                'text' => '🔰 فقط مجاز به استفاده از دکمه های زیر می باشد',
+            ]);
+        }
+    } else if ($rows_SB['SB_Step'] == 8) {
+        if ($msgType == 'message') {
+            if ($text == "✅ تایید ثبت نام ✅") {
+
+                // ذخیره دانشجو در لیست ثبت نام
+                $stmt = $pdo->prepare("INSERT INTO User_Register (UR_Chatid, UR_Name, UR_Family, UR_Meli, UR_Mob, UR_MobTelegram, UR_Phone, UR_Uni, UR_Date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([
+                    $chat_id,
+                    $rows_SB['SB_Name'],
+                    $rows_SB['SB_Family'],
+                    $rows_SB['SB_Meli'],
+                    $rows_SB['SB_Mob'],
+                    $rows_SB['SB_MobTelegram'],
+                    $rows_SB['SB_Phone'],
+                    $rows_SB['SB_Uni'],
+                    tr_num($jdf_Unix, 'en')
+                ]);
+
+                // حذف رکورد پس از تکمیل ثبت نام
+                $Dstmt = $pdo->prepare("DELETE FROM Start_Bot WHERE SB_Chatid = '$chat_id'");
+                $Dstmt->execute();
+
+                $start_key = json_encode([
+                    "keyboard" =>
+                        [
+                            [['text' => 'ارسال پیام'], ['text' => "ارسال رسید پرداختی"]],
+                            [['text' => 'ویرایش شماره تماس'], ['text' => "ارسال مدارک"]],
+                            [['text' => "تست مجدد ثبت نام دانشجو"]],
+                        ],
+                    "resize_keyboard" => true
+                ]);
+
+                $telegram->sendMessage([
+                    'chat_id' => $chat_id,
+                    'reply_markup' => $start_key,
+                    'text' => "♻️ {$rows_SB['SB_Name']} عزیز خوش آمدی، ثبت نام شما با موفقیت انجام شد."
+                ]);
+
+            } else if ($text == 'بازگشت') {
+                $stmt = $pdo->prepare("UPDATE Start_Bot SET SB_Step = ?, SB_Uni = ?  WHERE SB_Chatid = '$chat_id'");
+                $stmt->execute([7, ""]);
+
+                // خواندن مقادیر از دیتابیس لیست دانشگاه
+                $stmt = $pdo->query("SELECT UL_Name FROM Uni_List");
+                $buttonNames = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+                // ایجاد دکمه ها
+                $buttons = [];
+                foreach ($buttonNames as $buttonName) {
+                    $buttons[] = [$buttonName['UL_Name']];
+                }
+
+                $buttons[] = ['بازگشت'];
+
+                // ایجاد کیبورد
+                $keyboard = ['keyboard' => $buttons, 'resize_keyboard' => true];
+
+                // ارسال پیام با کیبورد
+                $telegram->sendMessage([
+                    'chat_id' => $chat_id,
+                    'text' => '🔰 لطفا دانشگاه خود را از لیست زیر انتخاب نمایید.',
+                    'reply_markup' => json_encode($keyboard)
+                ]);
+
+            }
+        } else {
+            $telegram->sendMessage([
+                'chat_id' => $chat_id,
+                'text' => '🔰 فقط مجاز به استفاده از دکمه های زیر می باشد',
+            ]);
+        }
     }
 }
-
-
-// }
 
 
 
@@ -785,10 +1183,6 @@ if ($text == '/start' || $rows_SB['SB_Step'] == 0) {
 
 
 
-
-
-
-
 // if ($msgType == 'message') {
 
 
@@ -824,8 +1218,4 @@ if ($text == '/start' || $rows_SB['SB_Step'] == 0) {
 
 // // InlineKeyBoard
 // $option = array(
-//     array($telegram->buildInlineKeyBoardButton("Button 1", $url = "http://link1.com"), $telegram->buildInlineKeyBoardButton("Button 2", $url = "http://link2.com")),
-//     array($telegram->buildInlineKeyBoardButton("Button 3", $url = "http://link3.com"), $telegram->buildInlineKeyBoardButton("Button 4", $url = "http://link4.com"), $telegram->buildInlineKeyBoardButton("Button 5", $url = "http://link5.com")),
-//     array($telegram->buildInlineKeyBoardButton("Button 6", $url = "http://link6.com"))
-// );
-// $keyb = $telegram->buildInlineKeyBoard($option);
+//     array($telegram->bui
